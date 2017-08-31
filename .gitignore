@@ -1,0 +1,5 @@
+*.crf
+*.o
+*.d
+MDK-ARM/ball-thrower/ball-thrower.*
+MDK-ARM/ball-thrower.uvguix.ahuba
