@@ -3,6 +3,7 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "cmsis_os.h"
+#include "stm32f1xx_hal.h"
 
 #define bin(a,b,c,d,e,f,g,h) ((a<<7)|(b<<6)|(c<<5)|(d<<4)|(e<<3)|(f<<2)|(g<<1)|h)
 #define mcode(len,code) ((len<<8)|code)
@@ -51,11 +52,11 @@ const unsigned short morseCodes[]= {
 static QueueHandle_t stateQ;
 
 __weak void led_on(void) {
-
+    HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 }
 
 __weak void led_off(void) {
-
+    HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
 }
 
 
