@@ -2,6 +2,7 @@
 #include "main.h"
 #include "stm32f1xx_hal.h"
 #include "cmsis_os.h"
+#include "state_blinker.h"
 
 
 osThreadId defaultTaskHandle;
@@ -9,7 +10,20 @@ osThreadId defaultTaskHandle;
 
 void StartDefaultTask(void const * argument);
 
-void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+
+void TogglePin(void *params) {
+    TickType_t last_run;
+
+    last_run=xTaskGetTickCount();
+
+    for(;;) {
+        HAL_GPIO_WritePin(AUX_OUT1_GPIO_Port, AUX_OUT1_Pin, GPIO_PIN_SET);
+        osDelay(5);
+        HAL_GPIO_WritePin(AUX_OUT1_GPIO_Port, AUX_OUT1_Pin, GPIO_PIN_RESET);
+        osDelayUntil(&last_run, 20);
+    }
+}
+
 
 int main(void) {
     HAL_Init();
@@ -17,6 +31,10 @@ int main(void) {
     MX_GPIO_Init();
     MX_TIM2_Init();
     MX_NVIC_Init();
+
+    init_state_blinker();
+    xTaskCreate(TogglePin, "", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+
     osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
     defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
