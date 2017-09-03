@@ -31,7 +31,7 @@ void MX_GPIO_Init(void) {
 
     /*Configure GPIO pin : BALL_READY_Pin */
     GPIO_InitStruct.Pin = BALL_READY_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
     GPIO_InitStruct.Pull = GPIO_PULLUP;
     HAL_GPIO_Init(BALL_READY_GPIO_Port, &GPIO_InitStruct);
 

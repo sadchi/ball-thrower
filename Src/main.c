@@ -1,8 +1,10 @@
 #include "init.h"
 #include "main.h"
+#include "buttons.h"
 #include "stm32f1xx_hal.h"
 #include "cmsis_os.h"
 #include "state_blinker.h"
+#include "buttons.h"
 
 
 osThreadId defaultTaskHandle;
@@ -18,9 +20,9 @@ void TogglePin(void *params) {
 
     for(;;) {
         HAL_GPIO_WritePin(AUX_OUT1_GPIO_Port, AUX_OUT1_Pin, GPIO_PIN_SET);
-        osDelay(5);
+        osDelay(500);
         HAL_GPIO_WritePin(AUX_OUT1_GPIO_Port, AUX_OUT1_Pin, GPIO_PIN_RESET);
-        osDelayUntil(&last_run, 20);
+        osDelayUntil(&last_run, 1000);
     }
 }
 
@@ -33,7 +35,8 @@ int main(void) {
     MX_NVIC_Init();
 
     init_state_blinker();
-    xTaskCreate(TogglePin, "", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+    init_buttons_debouncer();
+    // xTaskCreate(TogglePin, "", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 
     osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
     defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);

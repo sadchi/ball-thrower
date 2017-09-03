@@ -3,6 +3,8 @@
         "stm32f1xx_hal_tim.h": "c",
         "stm32f1xx_hal.h": "c",
         "main.h": "c",
-        "init.h": "c"
+        "init.h": "c",
+        "stm32f1xx_it.h": "c",
+        "timers.h": "c"
     }
 }
