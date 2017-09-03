@@ -5,6 +5,7 @@
 #include "cmsis_os.h"
 #include "state_blinker.h"
 #include "buttons.h"
+#include "servo.h"
 
 
 osThreadId defaultTaskHandle;
@@ -40,6 +41,8 @@ int main(void) {
 
     osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
     defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+
+    set_servo_val(SERVO_END);
 
     osKernelStart();
 
