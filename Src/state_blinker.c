@@ -80,7 +80,7 @@ static void blink_morse_sym(char c) {
 
 static void blinker_task(void *params) {
     TickType_t last_run;
-    state_t state=IDLE;
+    state_t state=ST_IDLE;
 
     last_run=xTaskGetTickCount();
     while(1) {

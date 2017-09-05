@@ -10,7 +10,8 @@
       <TargetName>ball-thrower</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
+      <pCCUsed>5060528::V5.06 update 5 (build 528)::ARMCC</pCCUsed>
+      <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F103C8</Device>
@@ -493,6 +494,16 @@
               <FileName>servo.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\servo.c</FilePath>
+            </File>
+            <File>
+              <FileName>state.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\state.c</FilePath>
+            </File>
+            <File>
+              <FileName>event.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\event.c</FilePath>
             </File>
           </Files>
         </Group>
