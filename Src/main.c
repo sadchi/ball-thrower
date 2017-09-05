@@ -12,6 +12,7 @@
 
 #define ENQUEUE_TIMEOUT_MS 50
 #define ENQUEUE_TIMEOUT_TCK (pdMS_TO_TICKS(ENQUEUE_TIMEOUT_MS))
+#define DEQUEUE_TIMEOUT_TCK (pdMS_TO_TICKS(50))
 
 osThreadId defaultTaskHandle;
 
@@ -67,16 +68,21 @@ static void arm(void) {
 
 
 
-void TogglePin(void *params) {
-    TickType_t last_run;
-
-    last_run=xTaskGetTickCount();
+void main_task(void *params) {
+    event_t evt;
+    BaseType_t res;
 
     for(;;) {
-        HAL_GPIO_WritePin(AUX_OUT1_GPIO_Port, AUX_OUT1_Pin, GPIO_PIN_SET);
-        osDelay(500);
-        HAL_GPIO_WritePin(AUX_OUT1_GPIO_Port, AUX_OUT1_Pin, GPIO_PIN_RESET);
-        osDelayUntil(&last_run, 1000);
+        res=xQueueReceive(eventQ, &evt, DEQUEUE_TIMEOUT_TCK);
+
+        if(res == pdPASS)
+            for(int i=0; i< (sizeof(ball_thrower_fsm)/sizeof(ball_thrower_fsm[0])); i++) {
+                if(ball_thrower_fsm[i].cur_state == ball_thrower_fsm_cur_state
+                        && ball_thrower_fsm[i].event == evt) {
+                    ball_thrower_fsm_cur_state = ball_thrower_fsm[i].new_state;
+                    ball_thrower_fsm[i].action();
+                }
+            }
     }
 }
 
