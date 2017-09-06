@@ -12,4 +12,3 @@ void set_servo_val(unsigned short value)
     HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_1);
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);  
 }
-

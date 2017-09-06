@@ -14,6 +14,7 @@
 #define ENQUEUE_TIMEOUT_TCK (pdMS_TO_TICKS(ENQUEUE_TIMEOUT_MS))
 #define DEQUEUE_TIMEOUT_TCK (pdMS_TO_TICKS(50))
 
+
 osThreadId defaultTaskHandle;
 
 typedef struct {
@@ -37,9 +38,6 @@ static fsm_node ball_thrower_fsm[]= {
 
 
 static state_t ball_thrower_fsm_cur_state=ST_IDLE;
-
-static QueueHandle_t eventQ;
-
 
 static void idle(void) {
     enqueue_state(ST_IDLE, ENQUEUE_TIMEOUT_MS);
@@ -99,7 +97,7 @@ int main(void) {
 
     eventQ=xQueueCreate(10, sizeof(event_t));
 
-    // xTaskCreate(TogglePin, "", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+    xTaskCreate(main_task, "", configMINIMAL_STACK_SIZE, NULL, 3, NULL);
 
     osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
     defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);

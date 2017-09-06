@@ -14,7 +14,7 @@ const unsigned short dot_duration = 100;
 const unsigned short dash_duration = dot_duration * 4;
 const unsigned short sym_gap_duration = dot_duration * 3;
 const unsigned short word_gap_duration = dot_duration * 7;
-const unsigned short blink_interval=2000;
+const unsigned short blink_interval=1000;
 
 
 const char states_code_list[]= {'e', 't', 'i', 'a'};
