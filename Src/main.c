@@ -37,7 +37,7 @@ static fsm_node ball_thrower_fsm[]= {
 };
 
 
-static state_t ball_thrower_fsm_cur_state=ST_IDLE;
+
 
 static void idle(void) {
     enqueue_state(ST_IDLE, ENQUEUE_TIMEOUT_MS);
@@ -52,7 +52,7 @@ static void ball_ready(void) {
 }
 
 static void arm(void) {
-    static event_t evt=EV_FIRED;
+    const event_t evt=EV_FIRED;
 
     enqueue_state(ST_ARMING, ENQUEUE_TIMEOUT_MS);
 
@@ -61,12 +61,13 @@ static void arm(void) {
     set_servo_val(SERVO_END);
     osDelay(SERVO_TIME_TO_END_MS);
 
-    xQueueSend(eventQ, &evt, ENQUEUE_TIMEOUT_TCK);
+    while(xQueueSend(eventQ, &evt, ENQUEUE_TIMEOUT_TCK) != pdPASS);
 }
 
 
 
 void main_task(void *params) {
+    static state_t ball_thrower_fsm_cur_state=ST_IDLE;
     event_t evt;
     BaseType_t res;
 
@@ -79,6 +80,7 @@ void main_task(void *params) {
                         && ball_thrower_fsm[i].event == evt) {
                     ball_thrower_fsm_cur_state = ball_thrower_fsm[i].new_state;
                     ball_thrower_fsm[i].action();
+                    break;
                 }
             }
     }
@@ -97,7 +99,7 @@ int main(void) {
 
     eventQ=xQueueCreate(10, sizeof(event_t));
 
-    xTaskCreate(main_task, "", configMINIMAL_STACK_SIZE, NULL, 3, NULL);
+    xTaskCreate(main_task, "", configMINIMAL_STACK_SIZE, NULL, 7, NULL);
 
     osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
     defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);

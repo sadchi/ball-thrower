@@ -3,8 +3,8 @@
 
 //one tick of PWM timer should be 1mks
 
-#define SERVO_START 544
-#define SERVO_END 2400
+#define SERVO_START 600
+#define SERVO_END 2300
 #define SERVO_TIME_TO_START_MS 3000
 #define SERVO_TIME_TO_END_MS 3000
 
