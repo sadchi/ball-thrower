@@ -1,5 +1,6 @@
 #include "state.h"
 #include "state_blinker.h"
+#include "servo.h"
 
 
 void start_idle(void) {
