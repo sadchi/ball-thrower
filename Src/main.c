@@ -17,12 +17,6 @@
 
 osThreadId defaultTaskHandle;
 
-typedef struct {
-    state_t cur_state;
-    event_t event;
-    state_t new_state;
-    void (*action)(void);
-} fsm_node;
 
 
 void StartDefaultTask(void const * argument);
@@ -30,39 +24,10 @@ static void idle(void);
 static void ball_ready(void);
 static void arm(void);
 
-static fsm_node ball_thrower_fsm[]= {
-    {ST_IDLE,       EV_BALL_READY,   ST_BALL_READY, ball_ready},
-    {ST_BALL_READY, EV_READY_TO_ARM, ST_ARMING,     arm },
-    {ST_ARMING,     EV_FIRED,        ST_IDLE,       idle}
-};
 
 
 
 
-static void idle(void) {
-    enqueue_state(ST_IDLE, ENQUEUE_TIMEOUT_MS);
-}
-
-static void ball_ready(void) {
-    static event_t evt=EV_READY_TO_ARM;
-
-    enqueue_state(ST_BALL_READY, ENQUEUE_TIMEOUT_MS);
-    xQueueSend(eventQ, &evt, ENQUEUE_TIMEOUT_TCK);
-
-}
-
-static void arm(void) {
-    const event_t evt=EV_FIRED;
-
-    enqueue_state(ST_ARMING, ENQUEUE_TIMEOUT_MS);
-
-    set_servo_val(SERVO_START);
-    osDelay(SERVO_TIME_TO_START_MS);
-    set_servo_val(SERVO_END);
-    osDelay(SERVO_TIME_TO_END_MS);
-
-    while(xQueueSend(eventQ, &evt, ENQUEUE_TIMEOUT_TCK) != pdPASS);
-}
 
 
 
