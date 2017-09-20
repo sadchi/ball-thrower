@@ -95,7 +95,7 @@ void init_state_blinker(void) {
     xTaskCreate(blinker_task, "", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 }
 
-void enqueue_state(state_t state, short delay_ms) {
-    xQueueSend(stateQ, &state, pdMS_TO_TICKS(delay_ms));
+void enqueue_state(state_t state) {
+    xQueueSend(stateQ, &state, portMAX_DELAY);
 }
 

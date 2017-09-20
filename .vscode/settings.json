@@ -6,6 +6,7 @@
         "init.h": "c",
         "stm32f1xx_it.h": "c",
         "timers.h": "c",
-        "event.h": "c"
+        "event.h": "c",
+        "executor.h": "c"
     }
 }

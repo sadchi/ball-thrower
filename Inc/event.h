@@ -10,7 +10,5 @@ typedef enum {
     EV_READY_TO_ARM
 } event_t;
 
-extern QueueHandle_t eventQ;
-
 #endif
 

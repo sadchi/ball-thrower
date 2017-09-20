@@ -1,15 +1,14 @@
+#include "buttons.h"
+#include "cmsis_os.h"
+#include "event.h"
+#include "executor.h"
 #include "init.h"
 #include "main.h"
-#include "buttons.h"
-#include "stm32f1xx_hal.h"
-#include "cmsis_os.h"
-#include "state_blinker.h"
-#include "buttons.h"
 #include "servo.h"
 #include "state.h"
-#include "event.h"
+#include "state_blinker.h"
 #include "state_machine.h"
-#include "executor.h"
+#include "stm32f1xx_hal.h"
 
 
 

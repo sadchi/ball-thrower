@@ -1,9 +1,10 @@
-#include "state.h"
-#include "actions.h"
 #include "FreeRTOS.h"
-#include "queue.h"
+#include "actions.h"
 #include "event.h"
 #include "executor.h"
+#include "queue.h"
+#include "state.h"
+#include "task.h"
 
 
 static QueueHandle_t eventQ;
@@ -28,7 +29,7 @@ void enqueue_event(event_t event) {
 
 void state_machine_task(void* params) {
     event_t evt;
-    static state_t current_state=IDLE;
+    static state_t current_state=ST_IDLE;
 
     while(1) {
         if(xQueueReceive(eventQ, &evt, portMAX_DELAY) == pdTRUE) {
@@ -36,7 +37,7 @@ void state_machine_task(void* params) {
                 if(ball_thrower_fsm[i].cur_state == current_state
                         && ball_thrower_fsm[i].event == evt) {
                     current_state = ball_thrower_fsm[i].new_state;
-                    enqueue_action(ball_thrower_fsm[i].action)
+                    enqueue_action(ball_thrower_fsm[i].action);
                     break;
                 }
             }
