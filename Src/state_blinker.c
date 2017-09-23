@@ -5,11 +5,10 @@
 #include "cmsis_os.h"
 #include "stm32f1xx_hal.h"
 
-#define bin(a,b,c,d,e,f,g,h) ((a<<7)|(b<<6)|(c<<5)|(d<<4)|(e<<3)|(f<<2)|(g<<1)|h)
-#define mcode(len,code) ((len<<8)|code)
+#define bin(a,b,c,d,e) ((a<<4)|(b<<3)|(c<<2)|(d<<1)|e)
+#define mcode(len,code) ((len<<5)|code)
 
 
-const unsigned char char_base = 97;
 const unsigned short dot_duration = 100;
 const unsigned short dash_duration = dot_duration * 4;
 const unsigned short sym_gap_duration = dot_duration * 3;
@@ -17,36 +16,16 @@ const unsigned short word_gap_duration = dot_duration * 7;
 const unsigned short blink_interval=1000;
 
 
-const char states_code_list[]= {'e', 't', 'i', 'a'};
+typedef struct {
+    state_t state;
+    unsigned char code;
+} states_code;
 
-
-const unsigned short morseCodes[]= {
-    mcode(2,bin(0,0,0,0,0,0,1,0)), // A
-    mcode(4,bin(0,0,0,0,0,0,0,1)), // B
-    mcode(4,bin(0,0,0,0,0,1,0,1)), // C
-    mcode(3,bin(0,0,0,0,0,0,0,1)), // D
-    mcode(1,bin(0,0,0,0,0,0,0,0)), // E
-    mcode(4,bin(0,0,0,0,0,1,0,0)), // F
-    mcode(3,bin(0,0,0,0,0,0,1,1)), // G
-    mcode(4,bin(0,0,0,0,0,0,0,0)), // H
-    mcode(2,bin(0,0,0,0,0,0,0,0)), // I
-    mcode(4,bin(0,0,0,0,1,1,1,0)), // J
-    mcode(3,bin(0,0,0,0,0,1,0,1)), // K
-    mcode(4,bin(0,0,0,0,0,0,1,0)), // L
-    mcode(2,bin(0,0,0,0,0,0,1,1)), // M
-    mcode(2,bin(0,0,0,0,0,0,0,1)), // N
-    mcode(3,bin(0,0,0,0,0,1,1,1)), // O
-    mcode(4,bin(0,0,0,0,0,1,1,0)), // P
-    mcode(4,bin(0,0,0,0,1,0,1,1)), // Q
-    mcode(3,bin(0,0,0,0,0,0,1,0)), // R
-    mcode(3,bin(0,0,0,0,0,0,0,0)), // S
-    mcode(1,bin(0,0,0,0,0,0,0,1)), // T
-    mcode(3,bin(0,0,0,0,0,1,0,0)), // U
-    mcode(4,bin(0,0,0,0,1,0,0,0)), // V
-    mcode(3,bin(0,0,0,0,0,1,1,0)), // W
-    mcode(4,bin(0,0,0,0,1,0,0,1)), // X
-    mcode(4,bin(0,0,0,0,1,1,0,1)), // Y
-    mcode(4,bin(0,0,0,0,0,0,1,1))  // Z
+const states_code states_code_list[]= {
+    {ST_IDLE, mcode(1, bin(0,0,0,0,0))},
+    {ST_BALL_READY, mcode(1, bin(0,0,0,0,1))},
+    {ST_ARMING, mcode(2, bin(0,0,0,0,0))},
+    {ST_ERR, mcode(2, bin(0,0,0,1,0))}
 };
 
 static QueueHandle_t stateQ;
@@ -60,14 +39,12 @@ __weak void led_off(void) {
 }
 
 
-static void blink_morse_sym(char c) {
-    unsigned short code;
+static void blink_morse_sym(unsigned char code) {
     unsigned char seq;
 
-    code=morseCodes[c - char_base];
-    seq = code & 0xFF;
+    seq = code & 0x1F;
 
-    for(int i=0; i< (code>>8); i++) {
+    for(int i=0; i< (code>>5); i++) {
         led_on();
         if( seq & 1) osDelay(dash_duration);
         else osDelay(dot_duration);
@@ -78,14 +55,25 @@ static void blink_morse_sym(char c) {
     osDelay(sym_gap_duration);
 }
 
+unsigned char state_to_code(state_t state) {
+    for(int i=0; i< (sizeof(states_code_list)/sizeof(states_code_list[0])); i++) {
+        if (states_code_list[i].state == state) return states_code_list[i].code;
+    }
+
+    return 0;
+}
+
 static void blinker_task(void *params) {
     TickType_t last_run;
-    state_t state=ST_IDLE;
+    static state_t state=ST_IDLE;
+    unsigned char code=state_to_code(state);
 
     last_run=xTaskGetTickCount();
     while(1) {
-        xQueueReceive(stateQ, &state, 0);
-        blink_morse_sym(states_code_list[state]);
+        if(xQueueReceive(stateQ, &state, 0)) {
+            code=state_to_code(state);
+        }
+        blink_morse_sym(code);
         osDelayUntil(&last_run, blink_interval);
     }
 }
