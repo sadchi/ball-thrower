@@ -13,8 +13,10 @@ static volatile TimerHandle_t debounce=NULL;
 BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
 void ball_ready_callback(TimerHandle_t timer) {
-    HAL_GPIO_TogglePin(AUX_OUT1_GPIO_Port, AUX_OUT1_Pin);
-    enqueue_event(EV_BALL_READY);
+    if(HAL_GPIO_ReadPin(BALL_READY_GPIO_Port, BALL_READY_Pin) == GPIO_PIN_RESET) {
+        HAL_GPIO_TogglePin(AUX_OUT1_GPIO_Port, AUX_OUT1_Pin);
+        enqueue_event(EV_BALL_READY);
+    }
 }
 
 void init_buttons_debouncer(void) {
@@ -22,10 +24,7 @@ void init_buttons_debouncer(void) {
 }
 
 void EXTI1_IRQHandler(void) {
-    if(HAL_GPIO_ReadPin(BALL_READY_GPIO_Port, BALL_READY_Pin) == GPIO_PIN_SET)
-        xTimerStartFromISR(debounce, &xHigherPriorityTaskWoken);
-    else
-        xTimerStopFromISR(debounce, &xHigherPriorityTaskWoken);
+    xTimerStartFromISR(debounce, &xHigherPriorityTaskWoken);
 
     HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
 }
