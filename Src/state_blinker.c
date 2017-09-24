@@ -1,9 +1,11 @@
-#include "state_blinker.h"
-#include "init.h"
 #include "FreeRTOS.h"
-#include "queue.h"
 #include "cmsis_os.h"
+#include "init.h"
+#include "queue.h"
+#include "state_blinker.h"
+#include "state_blinker_periph.h"
 #include "stm32f1xx_hal.h"
+
 
 #define bin(a,b,c,d,e) ((a<<4)|(b<<3)|(c<<2)|(d<<1)|e)
 #define mcode(len,code) ((len<<5)|code)
@@ -30,14 +32,6 @@ const states_code states_code_list[]= {
 
 static QueueHandle_t stateQ;
 
-__weak void led_on(void) {
-    HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-}
-
-__weak void led_off(void) {
-    HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
-}
-
 
 static void blink_morse_sym(unsigned char code) {
     unsigned char seq;
@@ -45,10 +39,10 @@ static void blink_morse_sym(unsigned char code) {
     seq = code & 0x1F;
 
     for(int i=0; i< (code>>5); i++) {
-        led_on();
+        blinker_led_on();
         if( seq & 1) osDelay(dash_duration);
         else osDelay(dot_duration);
-        led_off();
+        blinker_led_off();
         osDelay(dot_duration);
         seq>>=1;
     }

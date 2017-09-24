@@ -519,6 +519,16 @@
               <FileType>1</FileType>
               <FilePath>..\Src\state_machine.c</FilePath>
             </File>
+            <File>
+              <FileName>state_blinker_periph.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\state_blinker_periph.c</FilePath>
+            </File>
+            <File>
+              <FileName>servo_periph.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\servo_periph.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
